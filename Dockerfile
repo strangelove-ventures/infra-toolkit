@@ -47,6 +47,7 @@ COPY --from=busybox-min /busybox/busybox /busybox/busybox
 # Add config-merge
 COPY --from=config-merge /usr/local/config-merge /usr/local/config-merge
 COPY --from=config-merge /usr/local/bin/config-merge /usr/local/bin/config-merge
+COPY --from=config-merge /usr/local/bin/envsubst /usr/local/bin/envsubst
 
 # Add dasel
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
