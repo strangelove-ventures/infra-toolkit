@@ -1,6 +1,15 @@
-FROM golang:1.19-alpine AS busybox-min
+FROM alpine:3 AS busybox-min
 
-RUN apk add --update --no-cache wget curl make git libc-dev bash gcc linux-headers eudev-dev
+RUN apk add --no-cache \
+  bash \
+  curl \
+  eudev-dev \
+  gcc \
+  git \
+  libc-dev \
+  linux-headers \
+  make \
+  wget
 
 # Build minimal busybox
 WORKDIR /
@@ -14,7 +23,13 @@ FROM boxboat/config-merge:latest as config-merge
 
 FROM golang:1.19-alpine
 
-RUN apk add wget curl lz4 nano jq npm
+RUN apk add --no-cache \
+  curl \
+  jq \
+  lz4 \
+  nano \
+  npm \
+  wget
 
 # Install busybox
 COPY --from=busybox-min /busybox/busybox /busybox/busybox
@@ -24,11 +39,16 @@ COPY --from=config-merge /usr/local/config-merge /usr/local/config-merge
 COPY --from=config-merge /usr/local/bin/config-merge /usr/local/bin/config-merge
 COPY --from=config-merge /usr/local/bin/envsubst /usr/local/bin/envsubst
 
-# Add dasel
+# Add dasel.
+# The dasel repository does not post checksums of the published binaries,
+# so use hardcoded binaries in order to avoid potential supply chain attacks.
+# Note, dasel does publish docker images, but only for amd64,
+# so we cannot copy the binary out like we do for config-merge.
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
-      ARCH=arm64; \
+      ARCH=arm64 DASELSUM="8e1f95b5f361f68ed8376d5a9593ae4249e28153a05b26f1f99f9466efeac5c9  /usr/local/bin/dasel"; \
     else \
-      ARCH=amd64; \
+      ARCH=amd64 DASELSUM="3efd202a525c43c027bddc770861dd637ec8389a4ca3ef2951da7165350219ed  /usr/local/bin/dasel"; \
     fi; \
-    wget -O /usr/local/bin/dasel https://github.com/TomWright/dasel/releases/download/v1.26.0/dasel_linux_$ARCH
-RUN chmod +x /usr/local/bin/dasel
+    wget -O /usr/local/bin/dasel https://github.com/TomWright/dasel/releases/download/v1.26.0/dasel_linux_$ARCH && \
+      sha256sum -c <(echo "$DASELSUM") && \
+      chmod +x /usr/local/bin/dasel
