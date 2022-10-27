@@ -46,7 +46,7 @@ RUN if [ "${TARGETARCH}" = "arm64" ] && [ "${BUILDARCH}" != "arm64" ]; then \
 
 FROM boxboat/config-merge:latest as config-merge
 
-FROM golang:1.19-alpine
+FROM alpine:3
 
 RUN apk add --no-cache \
   curl \
