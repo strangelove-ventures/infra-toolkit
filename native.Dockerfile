@@ -1,6 +1,6 @@
-FROM alpine:3 AS busybox-min
+FROM alpine:3 AS build-env
 
-RUN apk add --no-cache \
+RUN apk add --update --no-cache \
   bash \
   curl \
   eudev-dev \
@@ -9,7 +9,12 @@ RUN apk add --no-cache \
   libc-dev \
   linux-headers \
   make \
-  wget
+  wget \
+  bison \
+  flex \
+  automake \
+  autoconf \
+  libtool
 
 # Build minimal busybox
 WORKDIR /
@@ -19,20 +24,30 @@ WORKDIR /busybox
 ADD busybox.min.config .config
 RUN make
 
+# Static jq
+WORKDIR /
+RUN git clone --recursive -b jq-1.6 --single-branch https://github.com/stedolan/jq.git
+WORKDIR /jq
+RUN autoreconf -fi;\
+  ./configure --with-oniguruma=builtin;\ 
+  make LDFLAGS=-all-static
+
 FROM boxboat/config-merge:latest as config-merge
 
 FROM alpine:3
 
 RUN apk add --no-cache \
   curl \
-  jq \
   lz4 \
   nano \
   npm \
   wget
 
 # Install busybox
-COPY --from=busybox-min /busybox/busybox /busybox/busybox
+COPY --from=build-env /busybox/busybox /busybox/busybox
+
+# Install jq
+COPY --from=build-env /jq/jq /usr/local/bin/jq
 
 # Add config-merge
 COPY --from=config-merge /usr/local/config-merge /usr/local/config-merge
