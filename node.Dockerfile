@@ -1,8 +1,12 @@
-FROM alpine
-RUN apk add --update jq py3-pip bash g++  && \
-  wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | /bin/bash && \
-  export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" && \
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm && \
-  TMP_LDFLAGS="$LDFLAGS" && \
-  export LDFLAGS= && \
-  nvm install -s 18
+FROM alpine AS builder
+RUN apk add git python3 gcc g++ linux-headers make
+RUN git clone https://github.com/nodejs/node --single-branch --branch v18.16.0 && \
+  cd node && \
+  ./configure --fully-static --enable-static && \
+  make -j$(nproc)
+
+RUN cd node && make install
+
+FROM scratch
+LABEL org.opencontainers.image.source="https://github.com/strangelove-ventures/infra-toolkit"
+COPY --from=builder /usr/local /usr/local
