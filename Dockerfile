@@ -57,7 +57,7 @@ RUN autoreconf -fi;\
   ./configure --with-oniguruma=builtin;\ 
   make LDFLAGS=-all-static
 
-FROM boxboat/config-merge:latest as config-merge
+FROM boxboat/config-merge:v0.2.1 as config-merge
 
 FROM alpine:3
 
