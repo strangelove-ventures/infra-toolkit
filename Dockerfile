@@ -66,7 +66,8 @@ RUN apk add --no-cache \
   lz4 \
   nano \
   npm \
-  wget
+  wget \
+  zstd-dev
 
 # Install busybox
 COPY --from=build-env /busybox/busybox /busybox/busybox
