@@ -1,20 +1,20 @@
 FROM alpine:3 AS build-env
 
 RUN apk add --update --no-cache \
+  automake \
+  autoconf \
   bash \
+  bison \
   curl \
   eudev-dev \
+  flex \
   gcc \
   git \
   libc-dev \
+  libtool \
   linux-headers \
   make \
-  wget \
-  bison \
-  flex \
-  automake \
-  autoconf \
-  libtool
+  wget
 
 # Build minimal busybox
 WORKDIR /
@@ -41,7 +41,9 @@ RUN apk add --no-cache \
   lz4 \
   nano \
   npm \
-  wget
+  rsync \
+  wget \
+  zstd-dev
 
 # Install busybox
 COPY --from=build-env /busybox/busybox /busybox/busybox

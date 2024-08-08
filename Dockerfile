@@ -1,20 +1,20 @@
 FROM --platform=$BUILDPLATFORM alpine:3 AS build-env
 
 RUN apk add --update --no-cache \
+  automake \
+  autoconf \
   bash \
+  bison \
   curl \
   eudev-dev \
+  flex \
   gcc \
   git \
   libc-dev \
+  libtool \
   linux-headers \
   make \
-  wget \
-  bison \
-  flex \
-  automake \
-  autoconf \
-  libtool
+  wget
 
 ARG TARGETARCH
 ARG BUILDARCH
@@ -66,6 +66,7 @@ RUN apk add --no-cache \
   lz4 \
   nano \
   npm \
+  rsync \
   wget \
   zstd-dev
 
