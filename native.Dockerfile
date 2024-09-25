@@ -42,6 +42,7 @@ RUN apk add --no-cache \
   nano \
   npm \
   rsync \
+  tar \
   wget \
   zstd-dev
 
