@@ -66,8 +66,8 @@ RUN apk add --no-cache \
   lz4 \
   nano \
   npm \
-  procps \ 
   rsync \
+  sysctl \ 
   tar \
   wget \
   zstd-dev
