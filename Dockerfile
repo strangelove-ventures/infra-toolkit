@@ -66,6 +66,7 @@ RUN apk add --no-cache \
   lz4 \
   nano \
   npm \
+  procps \ 
   rsync \
   tar \
   wget \
