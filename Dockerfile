@@ -54,7 +54,7 @@ WORKDIR /
 RUN git clone --recursive -b jq-1.6 --single-branch https://github.com/stedolan/jq.git
 WORKDIR /jq
 RUN autoreconf -fi;\
-  ./configure --with-oniguruma=builtin;\ 
+  ./configure --with-oniguruma=builtin;\
   make LDFLAGS=-all-static
 
 FROM boxboat/config-merge:0.2.1 as config-merge
@@ -66,11 +66,12 @@ RUN apk add --no-cache \
   lz4 \
   nano \
   npm \
-  procps \ 
+  procps \
   rsync \
   tar \
   wget \
-  zstd-dev
+  zstd-dev \
+  aria2
 
 # Install busybox
 COPY --from=build-env /busybox/busybox /busybox/busybox
