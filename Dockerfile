@@ -47,6 +47,7 @@ RUN if [ "${TARGETARCH}" = "arm64" ] && [ "${BUILDARCH}" != "arm64" ]; then \
     elif [ "${TARGETARCH}" = "amd64" ] && [ "${BUILDARCH}" != "amd64" ]; then \
       export CC=x86_64-linux-musl-gcc; \
     fi; \
+    make allnoconfig && \
     make
 
 # Static jq
